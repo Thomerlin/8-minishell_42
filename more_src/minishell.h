@@ -14,14 +14,24 @@
 # define STDOUT 1
 # define STDERR 2
 
+typedef struct s_link
+{
+
+	struct s_link	*next;
+}	t_link;
+
 typedef struct s_data
 {
 	int		exit_code;
 	int		exit;
 	int		error;
+	int		in_exec;
+	int		exec_pid;
+	int		here_doc;
+	t_link	*list;
 }	t_data;
 
-extern t_data *global_data;
+extern t_data *g_data;
 
 int		ft_str_check(const char *s1, const char *s2);
 

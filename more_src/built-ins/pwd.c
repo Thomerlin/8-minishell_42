@@ -12,11 +12,12 @@
 
 #include "../minishell.h"
 
+t_data *g_data;
 void	pwd_built_in(void)
 {
 	char	*str;
 
-	global_data->exit_code = 0;
+	int exit_code = 0;
 	str = malloc (1024);
 	ft_putstr_fd(getcwd(str, 1024), STDOUT);
 	write (1, "\n", 1);
