@@ -3,19 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 12:26:53 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/05/22 22:24:32 by rruiz-la         ###   ########.fr       */
+/*   Updated: 2022/05/30 23:48:57 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char *clean_quotes(char *content)
+static int	split_var_n_content(t_cmd *cmd_node, int *i, int *j)
 {
-	int	i;
-	int	j;
+	if (ft_isalpha(cmd_node->word[0][0]) == 0)
+		return (-1);
+	while (cmd_node->word[0][(*i)])
+	{
+		if (cmd_node->word[0][(*i)] == '=')
+			break ;
+		else if (ft_isalnum(cmd_node->word[0][(*i)]) == 0)
+			return (-1);
+		else
+			*j++;
+		(*i)++;
+	}
+}
+
+char	*clean_quotes(char *content)
+{
+	int		i;
+	int		j;
 	char	*aux;
 
 	i = 0;
@@ -27,22 +43,21 @@ static char *clean_quotes(char *content)
 		i++;
 	}
 	aux = (char *)ft_calloc(j + 1, sizeof(char *));
-	i = 0;
+	i = -1;
 	j = 0;
-	while (content[i])
+	while (content[++i])
 	{
 		if (content[i] != '\'' && content[i] != '\"')
 		{
 			aux[j] = content[i];
 			j++;
 		}
-		i++;
 	}
 	aux[j] = '\0';
 	return (aux);
 }
 
-static int	check_for_var(t_cmd *cmd_node)
+static int	check_for_var(t_cmd *cmd_node, int w)
 {
 	int		i;
 	int		j;
@@ -50,61 +65,120 @@ static int	check_for_var(t_cmd *cmd_node)
 
 	i = 0;
 	j = 0;
-	if(ft_strchr(cmd_node->word[0], '=') != NULL)
+	if (ft_strchr(cmd_node->word[w], '=') != NULL)
 	{
-		if (ft_isalpha(cmd_node->word[0][0]) == 0)
+		if (split_var_n_content(cmd_node, &i, &j) == -1)
 			return (1);
-		while (cmd_node->word[0][i])
-		{
-			if (cmd_node->word[0][i] == '=')
-				break ;
-			else if (ft_isalnum(cmd_node->word[0][i])== 0)
-				return (1);
-			else
-				j++;
-			i++;
-		}
-		cmd_node->var_name = ft_substr(cmd_node->word[0], 0, i);
-		if (ft_strchr(cmd_node->var_name, '\'') != NULL || ft_strchr(cmd_node->var_name, '\"') != NULL)
+		cmd_node->var_name = ft_substr(cmd_node->word[w], 0, i);
+		if (ft_strchr(cmd_node->var_name, '\'') != NULL
+			|| ft_strchr(cmd_node->var_name, '\"') != NULL)
 		{
 			free(cmd_node->var_name);
 			return (1);
 		}
-		content = ft_substr(cmd_node->word[0], i + 1, ft_strlen(cmd_node->word[0]));
-		if (ft_strchr(content, '\'') != NULL || ft_strchr(content, '\"') != NULL)
-			 cmd_node->content = clean_quotes(content);
-		printf ("%s\n", cmd_node->var_name);
-		printf ("aaaaa %s\n", cmd_node->content);
-		free(cmd_node->var_name);
-		free(cmd_node->content);
+		content = ft_substr(cmd_node->word[w],
+				i + 1, ft_strlen(cmd_node->word[w]));
+		if (ft_strchr(content, '\'') != NULL
+			|| ft_strchr(content, '\"') != NULL)
+			cmd_node->content = clean_quotes(content);
+		else
+			cmd_node->content = ft_strdup(content);
 		free(content);
+		printf ("var name: %s\n", cmd_node->var_name);
+		printf ("content: %s\n", cmd_node->content);
 	}
 	return (0);
 }
 
-void	exec_words(t_cmd **cmd)
-{
-	t_cmd	*cmd_node;
 
-	cmd_node = (*cmd);
+
+
+
+
+
+
+
+
+void	assignment_expansion(t_cmd *cmd_node, int i)
+{
+	int		j;
+	int		b;
+	char	*dollar;
+
+	b = 0;
+	j = 0;
+	dollar = NULL;
+	if (cmd_node->word[i][j] == '$')
+	{
+		if (cmd_node->word[i][j + 1] == '{')
+		{
+			while (cmd_node->word[i][j] != '}')
+			{
+				if (cmd_node->word[i][j] == '\0')
+				{
+					b = 1;
+					break ;
+				}
+				j++;
+			}
+			if (b == 0)
+				dollar = ft_substr(cmd_node->word[i], 2, j - 2);
+		}	
+		else
+			dollar = ft_substr(cmd_node->word[i],
+					1, ft_strlen(cmd_node->word[i]));
+	}
+	printf("dolar %s\n", dollar);
+	if (b == 0)
+		free (dollar);
+}
+
+void	word_expansion(t_cmd *cmd_node)
+{
+	int		i;
+
+	i = 0;
 	if (cmd_node != NULL)
 	{
-		if (cmd_node->word[0] != NULL)
-			check_for_var(cmd_node);
+		while (cmd_node->word[i] != NULL)
+		{
+			if (ft_strchr(cmd_node->word[i], '=') != NULL)
+			{
+				check_for_var(cmd_node, i);
+				i++;
+			}
+			else if (cmd_node->word[i][0] == '~')
+			{
+				if (tild_expansion(cmd_node, i) == 1)
+					i++;
+			}
+			else if ((ft_strchr(cmd_node->word[i], '\'') != NULL)
+				|| (ft_strchr(cmd_node->word[i], '\"') != NULL))
+				quote_expansion(cmd_node, i);
+			else if (cmd_node->word[i][0] == '$')
+			{
+				assignment_expansion(cmd_node, i);
+				i++;
+			}
+			else
+				i++;
+		}
 	}
 }
 
 void	exec_cmds(t_cmd **cmd)
 {
-	if ((*cmd) != NULL)
+	t_cmd *cmd_node;
+
+	cmd_node = (*cmd);
+	while (cmd_node != NULL)
 	{
-		if ((*cmd)->here_doc[0] != NULL)
-			exec_here_doc(cmd);
-		if ((*cmd)->redirect[0] != NULL)
-			exec_redirect(cmd);
-		if ((*cmd)->word[0] != NULL)
-			exec_words(cmd);
+		if (cmd_node->redirect[0] != NULL)
+			exec_redirect(cmd, cmd_node);
+		if (cmd_node->word[0] != NULL)
+			word_expansion(cmd_node);
+		printf("%d\n", cmd_node->fd_in);
+		printf("%d\n", cmd_node->fd_out);
+		cmd_node = cmd_node->next;
 	}
-	printf("%d\n", (*cmd)->fd_in);
-	printf("%d\n", (*cmd)->fd_out);
 }

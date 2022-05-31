@@ -24,7 +24,20 @@ SRC_FILES	=	minishell.c \
 				exec_cmds.c \
 				exec_here_doc.c \
 				exec_redirects.c \
-				free_cmd_table.c
+				tild_expansion.c \
+				quote_exapansion.c \
+				handle_s_quote.c \
+				handle_d_quotes.c \
+				free_cmd_table.c \
+				env.c \
+				exe_command.c \
+				get_path.c \
+				free.c \
+				error.c \
+				pwd.c \
+				echo.c \
+				ft_str_check.c \
+				free_split.c
 SRC	=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
 OBJ_DIR	=	objects
@@ -58,6 +71,6 @@ re:	fclean all
 
 valgrind:
 	make
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --suppressions=readline.supp ./minishell
+	valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell
 
 .PHONY: all clean fclean re

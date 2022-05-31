@@ -6,26 +6,11 @@
 /*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/18 11:58:19 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/05/21 13:35:47 by rruiz-la         ###   ########.fr       */
+/*   Updated: 2022/05/28 10:18:05 by rruiz-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static char	*check_for_quotes(char **word)
-{
-	int		len;
-	char	*aux;
-
-	if ((*word)[0] == '\'' || (*word)[0] == '\"')
-	{
-		len = ft_strlen(*word);
-		aux = ft_substr(*word, 1, len - 2);
-	}
-	else
-		aux = ft_strdup(*word);
-	return (aux);
-}
 
 static void	write_line(char **limiter, int size_limiter, int *fd)
 {
@@ -61,7 +46,7 @@ static int	prepare_here_doc(char **here_doc, t_cmd **cmd)
 	int		size_limiter;
 	char	*limiter;
 
-	limiter = check_for_quotes(here_doc);
+	limiter = clean_quotes(*here_doc);
 	size_limiter = ft_strlen(limiter);
 	if (pipe(fd) < 0)
 		exit (write(1, "Pipe error\n", ft_strlen("Pipe error\n")));
@@ -73,6 +58,7 @@ static int	prepare_here_doc(char **here_doc, t_cmd **cmd)
 		write_line(&limiter, size_limiter, fd);
 		free (limiter);
 		free_cmd_table(cmd);
+		rl_clear_history();
 		exit(0);
 	}
 	waitpid(pid, NULL, 0);
@@ -81,23 +67,15 @@ static int	prepare_here_doc(char **here_doc, t_cmd **cmd)
 	return (fd[0]);
 }
 
-void	exec_here_doc(t_cmd **cmd)
+void	exec_here_doc(t_cmd *cmd_node, t_cmd **cmd, int i)
 {
-	int		i;
 	int		fd;
-	t_cmd	*cmd_node;
 
-	cmd_node = (*cmd);
-	while (cmd_node != NULL)
+	if (ft_strncmp(cmd_node->redirect[i], "<<", 2) == 0)
 	{
-		i = -1;
-		while (cmd_node->here_doc[++i] != NULL)
-		{
-			if (ft_strncmp(cmd_node->here_doc[i], "<<", 2) != 0)
-				fd = prepare_here_doc(&cmd_node->here_doc[i], cmd);
-		}
-		cmd_node->fd_in = fd;
-		cmd_node = cmd_node->next;
-		close (fd);
+		i++;
+		fd = prepare_here_doc(&cmd_node->redirect[i], cmd);
 	}
+	cmd_node->fd_in = fd;
+	close (fd);
 }
