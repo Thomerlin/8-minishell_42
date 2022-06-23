@@ -1,35 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   quote_expansion.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/10 20:25:13 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/06/22 21:50:16 by tyago-ri         ###   ########.fr       */
+/*   Created: 2022/05/27 18:18:10 by rruiz-la          #+#    #+#             */
+/*   Updated: 2022/06/18 19:49:36 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../../include/minishell.h"
 
-char	*ft_strdup(const char *s)
+int	quote_expansion(t_cmd *cmd_node, int i)
 {
-	char		*str;
-	size_t		i;
-	size_t		len;
+	int	j;
 
-	i = 0;
-	len = ft_strlen(s);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!str)
+	j = 0;
+	while (cmd_node->word[i][j])
 	{
-		return (NULL);
+		if (cmd_node->word[i][j] == '\'')
+		{
+			handle_s_quote(cmd_node, i);
+			return (0);
+		}
+		else if (cmd_node->word[i][j] == '\"')
+		{
+			if (handle_d_quotes(cmd_node, i) < 0)
+				return (-1);
+			else
+				return (0);
+		}
+		j++;
 	}
-	while (s[i] != '\0')
-	{
-		str[i] = s[i];
-		i++;
-	}
-	str[i] = '\0';
-	return (str);
+	return (0);
 }

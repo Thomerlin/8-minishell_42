@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   token_analysis.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/12 23:26:32 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/05/15 20:49:00 by rruiz-la         ###   ########.fr       */
+/*   Updated: 2022/06/18 19:49:36 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../include/minishell.h"
 
 static char	**split_line(char **parsed_line, t_mns *data)
 {
@@ -78,23 +78,30 @@ static void	malloc_data_parsed_line(t_mns *data, char **parsed_line)
 	free_parsed_line(parsed_line);
 }
 
-int	token_analysis(t_mns *data)
+int	token_analysis(void)
 {
 	int		i;
 	char	**parsed_line;
+	t_mns	*data;
 
+	data = &(g_data.mns);
 	i = 0;
 	data->n = get_n_break(data, i);
 	if (data->n < 0)
+	{
+		data->err_num = -1;
 		return (-1);
+	}
 	parsed_line = malloc_parsed_line(data->n);
 	parsed_line = split_line(parsed_line, data);
 	if (parsed_line[0] == 0)
 	{
 		free_parsed_line(parsed_line);
+		data->err_num = -2;
 		return (-2);
 	}
 	else
 		malloc_data_parsed_line(data, parsed_line);
+	free_line();
 	return (0);
 }

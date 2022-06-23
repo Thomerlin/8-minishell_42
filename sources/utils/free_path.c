@@ -1,30 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_list.h                                         :+:      :+:    :+:   */
+/*   free_path.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/15 18:26:21 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/06/22 21:52:06 by tyago-ri         ###   ########.fr       */
+/*   Created: 2022/06/22 14:53:28 by rruiz-la          #+#    #+#             */
+/*   Updated: 2022/06/22 14:59:20 by rruiz-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ENV_LIST_H
-# define ENV_LIST_H
+#include "../../include/minishell.h"
 
-// # include "libft.h"
-
-# define STDIN 0
-# define STDOUT 1
-# define STDERR 2
-
-typedef struct s_env_list
+void	free_path(void)
 {
-	char				*key;
-	char				*value;
-	int					d_exit;
-	struct s_env_list	*next;
-}	t_env_list;
+	int	i;
 
-#endif
+	i = -1;
+	while (g_data.exec.path[++i] != NULL)
+		free(g_data.exec.path[i]);
+	free (g_data.exec.path);
+	g_data.exec.path = NULL;
+}

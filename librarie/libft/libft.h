@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:33:28 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/05/25 18:34:12 by rruiz-la         ###   ########.fr       */
+/*   Updated: 2022/06/22 21:52:20 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,12 @@ char	*ft_itoa(int n);
     *string with dynamically allocated memory;
 **/
 char	*ft_strjoin(char const *s1, char const *s2);
+/**
+ 	*The str_superjoin() function combines all strings from any size
+    *received from an argument list, and puts the result into the returned
+    *string with dynamically allocated memory;
+**/
+char	*ft_str_superjoin(char **src);
 /**
  	*The strtrim removes all whitespace characters 
 	*from the beginning and the end of a string.

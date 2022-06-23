@@ -1,35 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   clean_quotes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/10 20:25:13 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/06/22 21:50:16 by tyago-ri         ###   ########.fr       */
+/*   Created: 2022/06/18 10:30:31 by rruiz-la          #+#    #+#             */
+/*   Updated: 2022/06/18 19:49:36 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../../include/minishell.h"
 
-char	*ft_strdup(const char *s)
+char	*clean_quotes(char *content)
 {
-	char		*str;
-	size_t		i;
-	size_t		len;
+	int		i;
+	int		j;
+	char	*aux;
 
 	i = 0;
-	len = ft_strlen(s);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!str)
+	j = 0;
+	while (content[i])
 	{
-		return (NULL);
-	}
-	while (s[i] != '\0')
-	{
-		str[i] = s[i];
+		if (content[i] != '\'' && content[i] != '\"')
+			j++;
 		i++;
 	}
-	str[i] = '\0';
-	return (str);
+	aux = (char *)ft_calloc(j + 1, sizeof(char *));
+	i = -1;
+	j = 0;
+	while (content[++i])
+	{
+		if (content[i] != '\'' && content[i] != '\"')
+		{
+			aux[j] = content[i];
+			j++;
+		}
+	}
+	aux[j] = '\0';
+	return (aux);
 }

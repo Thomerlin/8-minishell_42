@@ -1,35 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   create_cmd_table.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/10 20:25:13 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/06/22 21:50:16 by tyago-ri         ###   ########.fr       */
+/*   Created: 2022/06/11 17:23:15 by rruiz-la          #+#    #+#             */
+/*   Updated: 2022/06/18 19:49:36 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../../include/minishell.h"
 
-char	*ft_strdup(const char *s)
+void	create_cmd_table(void)
 {
-	char		*str;
-	size_t		i;
-	size_t		len;
+	t_cmd		*cmd_node;
+	t_cmd		*last_node;
+	t_mns		*data;
 
-	i = 0;
-	len = ft_strlen(s);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!str)
-	{
-		return (NULL);
-	}
-	while (s[i] != '\0')
-	{
-		str[i] = s[i];
-		i++;
-	}
-	str[i] = '\0';
-	return (str);
+	g_data.cmd = NULL;
+	data = &(g_data.mns);
+	cmd_node = NULL;
+	last_node = NULL;
+	cmd_table(cmd_node, data, last_node);
 }

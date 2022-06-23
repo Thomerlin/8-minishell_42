@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_analysis.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rruiz-la <rruiz-la@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: tyago-ri <tyago-ri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 09:31:32 by rruiz-la          #+#    #+#             */
-/*   Updated: 2022/05/22 12:02:54 by rruiz-la         ###   ########.fr       */
+/*   Updated: 2022/06/18 19:49:36 by tyago-ri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../include/minishell.h"
 
 static void	print_error(char *word)
 {
@@ -66,10 +66,12 @@ static int	loop_lexical_line(char **lexical_line, int i)
 	return (i);
 }
 
-int	syntax_analysis(char **lexical_line)
+int	syntax_analysis(void)
 {
-	int	i;
+	int		i;
+	char	**lexical_line;
 
+	lexical_line = g_data.mns.lexical_line;
 	i = check_lexical_line_size_n_errors(lexical_line);
 	if (i < 0)
 		return (2);

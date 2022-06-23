@@ -1,73 +1,108 @@
-NAME	=	minishell
+NAME		= minishell
 
-PATH_LIBFT	=	./librarie/libft
-LIBFT	=	$(PATH_LIBFT)/libft.a
+PATH_LIBFT	= ./librarie/libft
+LIBFT		= $(PATH_LIBFT)/libft.a
 
-I_MINISHELL	=	-I ./include
+SRC_DIR		= sources
+PATH_OBJ	= objects
 
-I_OBJ	=	-I ./ -I ./librarie/libft/
-LINK	=	-I ./ -I ./librarie/libft/ -L ./librarie/libft/ -lft
-LDFLAGS	=	-lreadline
+BUILTIN		= built_ins/
+ENVP		= envp/
+EXEC		= execs/
+EXPANSION	= expansions/
+PARSER		= parser/
+SIGNAL		= signals/
+SYSTEM		= system/
+UTILS		= utils/
 
-CC	=	gcc
-#CFLAGS	=	-Wall -Wextra -Werror -lreadline
+HEADERS		= include/minishell.h
 
-SRC_DIR		=	sources
-SRC_FILES	=	minishell.c \
-				cmd_output_line.c \
-				token_analysis.c \
-				count_line.c \
-				len_subline.c \
-				lexical_analysis.c \
-				syntax_analysis.c \
-				cmd_table.c \
-				exec_cmds.c \
-				exec_here_doc.c \
-				exec_redirects.c \
-				tild_expansion.c \
-				quote_exapansion.c \
-				handle_s_quote.c \
-				handle_d_quotes.c \
-				free_cmd_table.c \
-				env.c \
-				exe_command.c \
-				get_path.c \
-				free.c \
-				error.c \
-				pwd.c \
-				echo.c \
-				ft_str_check.c \
-				free_split.c
-SRC	=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
+CC			= gcc
+RM			= rm -rf
+CFLAGS		= -Wall -Wextra -Werror -lreadline
 
-OBJ_DIR	=	objects
-OBJ	=	$(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-FS	=	-g3
+SRC_FILES	=	$(SYSTEM)minishell.c \
+				$(SYSTEM)prompt.c \
+				$(ENVP)create_envp_list.c \
+				$(UTILS)extract_key_n_value.c \
+				$(ENVP)free_envp_list.c \
+				$(PARSER)parsing_n_exec.c \
+				$(PARSER)token_analysis.c \
+				$(PARSER)lexical_analysis.c \
+				$(PARSER)syntax_analysis.c \
+				$(EXPANSION)word_expansion.c \
+				$(EXPANSION)tild_expansion.c \
+				$(EXPANSION)quote_expansion.c \
+				$(EXPANSION)assingment_expansion.c \
+				$(EXPANSION)handle_s_quote.c \
+				$(EXPANSION)handle_d_quotes.c \
+				$(EXEC)create_cmd_table.c \
+				$(EXEC)cmd_table.c \
+				$(EXEC)free_cmd_table.c \
+				$(EXEC)exec_cmds.c \
+				$(EXEC)treat_redirectsc.c \
+				$(EXEC)exec_here_doc.c \
+				$(EXEC)exec_redirects.c \
+				$(EXEC)validate_path.c \
+				$(EXEC)exec_child.c \
+				$(BUILTIN)built_ins.c \
+				$(BUILTIN)special_built_in.c \
+				$(BUILTIN)env.c \
+				$(BUILTIN)pwd.c \
+				$(BUILTIN)echo.c \
+				$(BUILTIN)cd.c \
+				$(BUILTIN)export.c \
+				$(BUILTIN)unset.c \
+				$(BUILTIN)exit.c \
+				$(SIGNAL)signal.c \
+				$(UTILS)count_line.c \
+				$(UTILS)len_subline.c \
+				$(UTILS)pre_assingment_expansion.c \
+				$(UTILS)pre_assingment_expansion_utils.c \
+				$(UTILS)clean_quotes.c \
+				$(UTILS)ft_str_check.c \
+				$(UTILS)ft_str_isnum.c \
+				$(UTILS)free_split.c \
+				$(UTILS)free_path.c
 
-all:	$(NAME)
+SRC 		= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+OBJ			= $(SRC:$(SRC_DIR)/%.c=$(PATH_OBJ)/%.o)
 
-$(NAME):	$(LIBFT) $(OBJ_DIR) $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(LINK) $(LDFLAGS) -o $(NAME) $(I_MINISHELL)
+NAME		= minishell
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $(FS) -c $< -o $@ $(I_OBJ) $(I_MINISHELL)
+all: make_libft $(NAME)
 
-$(LIBFT):
-	make -C $(PATH_LIBFT)
+$(NAME): $(OBJ)
+	@echo done!!
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(LEAK) -lreadline -g -o $(NAME)
 
-$(OBJ_DIR):
-	mkdir objects
+$(PATH_OBJ)/%.o: $(SRC_DIR)/%.c $(HEADERS)
+	@mkdir -p $(PATH_OBJ)
+	@mkdir -p $(PATH_OBJ)/$(BUILTIN)
+	@mkdir -p $(PATH_OBJ)/$(ENVP)
+	@mkdir -p $(PATH_OBJ)/$(EXEC)
+	@mkdir -p $(PATH_OBJ)/$(EXPANSION)
+	@mkdir -p $(PATH_OBJ)/$(PARSER)
+	@mkdir -p $(PATH_OBJ)/$(SIGNAL)
+	@mkdir -p $(PATH_OBJ)/$(SYSTEM)
+	@mkdir -p $(PATH_OBJ)/$(UTILS)
+	$(CC) -g $(CFLAGS) -c -I includes -o $@ $<
+
+make_libft:
+	@make -C $(PATH_LIBFT)
 
 clean:
-	rm -rf $(OBJ_DIR)
-	make -C $(PATH_LIBFT) clean
+	@$(RM) $(PATH_OBJ)
+	@make -C $(PATH_LIBFT) clean
+	@echo obj removed!
 
 fclean: clean
-	rm -rf $(NAME)
-	make -C $(PATH_LIBFT) fclean
+	@$(RM) $(NAME)
+	@make -C $(PATH_LIBFT) clean fclean
+	@echo clean everything
 
-re:	fclean all
+re: fclean all
 
 valgrind:
 	make
